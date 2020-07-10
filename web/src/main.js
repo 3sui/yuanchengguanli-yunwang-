@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-04-28 15:28:09
- * @LastEditTime: 2020-05-16 10:56:05
+ * @LastEditTime: 2020-06-14 17:46:53
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-manage-system\src\main.js
@@ -17,6 +17,8 @@ import VueI18n from 'vue-i18n';
 import BaiduMap from 'vue-baidu-map'
 import echarts from 'echarts'
 
+import Moment from 'moment'
+
 import {
     messages
 } from './components/common/i18n';
@@ -27,10 +29,13 @@ import './components/common/directives';
 import 'babel-polyfill';
 import XLSX from 'xlsx'
 
+import './assets/scss/style.scss'
+
 import JsonExcel from 'vue-json-excel'
 Vue.component('downloadExcel', JsonExcel)
 Vue.use(XLSX)
 Vue.use(echarts)
+// Vue.use(Moment)
 Vue.config.productionTip = false;
 Vue.use(BaiduMap, {
     // ak 是在百度地图开发者平台申请的密钥 详见 http://lbsyun.baidu.com/apiconsole/key */
@@ -40,6 +45,7 @@ Vue.use(VueI18n);
 Vue.use(ElementUI, {
     size: 'small'
 });
+// Vue.use(Moment)
 const i18n = new VueI18n({
     locale: 'zh',
     messages
@@ -47,7 +53,7 @@ const i18n = new VueI18n({
 Vue.prototype.$echarts = echarts;
 //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
-    document.title = `${to.meta.title} | vue-manage-system`;
+    document.title = `${to.meta.title} | 设备远程管理系统`;
     const role = localStorage.getItem('ms_username');
     if (!role && to.path !== '/login') {
         next('/login');
@@ -66,8 +72,25 @@ router.beforeEach((to, from, next) => {
     }
 });
 
+//全局过滤器
+Vue.filter('convertTime', function (data, formatStr) {
+    return Moment(data, "YYYY-MM-DD HH:mm:ss").format(formatStr);
+});
+Vue.filter('convertTime2', function (data, formatStr) {
+    return Moment(+data).format(formatStr)
+})
+Vue.mixin({
+    methods: {
+        getAuthHeaders() {
+            return {
+                Authorization: `Bearer ${localStorage.token || ''}`
+            }
+        }
+    }
+})
+
 new Vue({
-   
+
     router,
     i18n,
     render: h => h(App)

@@ -1,7 +1,7 @@
 /*
  * @Author: your name
  * @Date: 2020-05-08 14:36:20
- * @LastEditTime: 2020-05-18 11:17:33
+ * @LastEditTime: 2020-06-01 11:26:07
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \server\route\admin\productProfile\index.js
@@ -11,6 +11,8 @@ module.exports = app => {
     const connection = require('../../../mysql/mysql')()
     const express = require('express')
     const router = express.Router()
+    const fs = require("fs"); // 读写文件的模块
+    const path = require("path") // 处理路径的模块
 
     //根据企业id已经上传数据的设备数量
     router.get('/fetchDeviceNum', async (res, req) => {
@@ -86,7 +88,7 @@ module.exports = app => {
                     }
                 })
                 .then(res => {
-                    console.log(res.data.data);
+                    console.log(res);
 
                     res.data.data.forEach(item => {
                         a.push(item.id)
@@ -528,6 +530,22 @@ module.exports = app => {
             if (err) throw err
             res.send('数据修改成功')
         })
+    })
+
+
+    const multer = require('multer')
+    const upload = multer({
+        dest: __dirname + '/../../../uploads'
+    })
+    app.post('/upload', upload.single('file'), async (req, res) => {
+        const file = req.file
+        res.send(file)
+    })
+    app.post('/remove', async (req, res) => {
+        const filename = req.body.file.response.filename
+        console.log(filename);
+        fs.unlinkSync(__dirname + '/../../../uploads/' + filename);
+        res.send('删除成功')
     })
     app.use('/', router)
 }

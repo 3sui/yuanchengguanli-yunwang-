@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-05-06 15:04:18
- * @LastEditTime: 2020-05-16 12:38:14
+ * @LastEditTime: 2020-06-08 00:43:58
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-manage-system\src\components\view\MaintenanceRecords.vue
@@ -11,7 +11,7 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
-                    <i class="el-icon-lx-cascades"></i> 产品档案
+                    <i class="el-icon-lx-cascades"></i> 设备档案
                 </el-breadcrumb-item>
                 <el-breadcrumb-item>维修记录</el-breadcrumb-item>
             </el-breadcrumb>
@@ -37,54 +37,10 @@
                         <div></div>
                     </el-col>
                     <el-col :span="18">
-                        <!-- <div class="product-status">
-                            <el-select
-                                v-model="query.address"
-                                placeholder="请选择省"
-                                class="handle-select mr10"
-                            >
-                                <el-option key="1" label="江苏省" value="江苏省"></el-option>
-                            </el-select>
-                            <el-select
-                                v-model="query.address"
-                                placeholder="请选择市"
-                                class="handle-select mr10"
-                            >
-                                <el-option key="1" label="常州市" value="常州市"></el-option>
-                            </el-select>
-                            <el-select
-                                v-model="query.address"
-                                placeholder="请选择区"
-                                class="handle-select mr10"
-                            >
-                                <el-option key="1" label="天宁区" value="天宁区"></el-option>
-                            </el-select>
-                            <el-select
-                                v-model="query.address"
-                                placeholder="设备种类"
-                                class="handle-select mr10"
-                            >
-                                <el-option key="1" label="干燥设备" value="干燥设备"></el-option>
-                            </el-select>
-                            <el-select
-                                v-model="query.address"
-                                placeholder="工作状态"
-                                class="handle-select mr10"
-                            >
-                                <el-option key="1" label="运行中" value="运行中"></el-option>
-                            </el-select>
-                            <el-select
-                                v-model="query.address"
-                                placeholder="开关机"
-                                class="handle-select"
-                            >
-                                <el-option key="1" label="开机" value="开机"></el-option>
-                            </el-select>
-                        </div>-->
                         <div class="product-status">
                             <el-input
-                                v-model="query.name"
-                                placeholder="请输入关键字"
+                                v-model="keyword"
+                                placeholder="客户名称、设备名称、设备ID、维修人"
                                 class="handle-input mr10"
                             ></el-input>
                             <!-- <div class="block">
@@ -111,7 +67,7 @@
                 </el-row>
             </div>
             <el-table
-                :data="tableData"
+                :data="tableData.slice((pageIndex-1)*pageSize,pageIndex*pageSize)"
                 border
                 class="table"
                 ref="multipleTable"
@@ -120,26 +76,25 @@
             >
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
                 <el-table-column type="index" label="序号" width="55" align="center"></el-table-column>
-                <el-table-column prop="CustomerName" label="客户名称"></el-table-column>
+                <el-table-column prop="enterprise_name" label="客户名称"></el-table-column>
 
-                <el-table-column prop="DeviceID" label="设备ID"></el-table-column>
-                <el-table-column prop="DeviceClass" label="设备种类"></el-table-column>
-                <el-table-column prop="DeviceName" label="设备名称"></el-table-column>
-                <el-table-column prop="Model" label="型号描述"></el-table-column>
+                <el-table-column prop="eq" label="设备ID"></el-table-column>
+                <el-table-column prop="typename" label="设备种类"></el-table-column>
+                <el-table-column prop="device_name" label="设备名称"></el-table-column>
+                <!-- <el-table-column prop="Model" label="型号描述"></el-table-column>
                 <el-table-column prop="SerialNumber" label="出厂编号"></el-table-column>
-                <el-table-column prop="StartTime" label="服务提出日期"></el-table-column>
-                <el-table-column prop="EndTime" label="维修时间"></el-table-column>
+                <el-table-column prop="StartTime" label="服务提出日期"></el-table-column>-->
 
-                <el-table-column prop="FaultType" label="故障类型"></el-table-column>
-                <el-table-column prop="FaultPhenomenon" label="故障现象"></el-table-column>
-                <el-table-column prop="LastSupplier" label="故障部件供应商"></el-table-column>
+                <el-table-column prop="type" label="故障类型"></el-table-column>
+                <el-table-column prop="phenomenon" label="故障现象"></el-table-column>
+                <!-- <el-table-column prop="LastSupplier" label="故障部件供应商"></el-table-column>
                 <el-table-column prop="IsReplace" label="是否更换零部件"></el-table-column>
                 <el-table-column prop="NewSupplier" label="更换部件供应商"></el-table-column>
-                <el-table-column prop="Price" label="维修费用（元）"></el-table-column>
-                <el-table-column prop="More" label="备注"></el-table-column>
+                <el-table-column prop="Price" label="维修费用（元）"></el-table-column>-->
+                <el-table-column prop="cause" label="原因"></el-table-column>
 
-                <el-table-column prop="RepairMan" label="维修人"></el-table-column>
-
+                <el-table-column prop="repair_person" label="维修人"></el-table-column>
+                <el-table-column prop="created_time" label="维修时间123"></el-table-column>
                 <el-table-column label="操作" width="180" align="center">
                     <template slot-scope="scope">
                         <el-button
@@ -169,7 +124,7 @@
         </div>
 
         <!-- 编辑弹出框 -->
-        <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
+        <!-- <el-dialog title="编辑" :visible.sync="editVisible" width="30%">
             <el-form ref="form" :model="form" label-width="70px">
                 <el-form-item label="用户名">
                     <el-input v-model="form.name"></el-input>
@@ -182,7 +137,7 @@
                 <el-button @click="editVisible = false">取 消</el-button>
                 <el-button type="primary" @click="saveEdit">确 定</el-button>
             </span>
-        </el-dialog>
+        </el-dialog>-->
     </div>
 </template>
 
@@ -191,50 +146,17 @@ export default {
     name: 'MaintenanceRecords',
     data() {
         return {
-            pickerOptions: {
-                shortcuts: [
-                    {
-                        text: '最近一周',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 7);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    },
-                    {
-                        text: '最近一个月',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 30);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    },
-                    {
-                        text: '最近三个月',
-                        onClick(picker) {
-                            const end = new Date();
-                            const start = new Date();
-                            start.setTime(start.getTime() - 3600 * 1000 * 24 * 90);
-                            picker.$emit('pick', [start, end]);
-                        }
-                    }
-                ]
-            },
+            keyword: '',
             tableData: [],
-
+            query: {},
             value1: '',
             value2: '',
-            query: {
-                address: '',
-                name: '',
-                pageIndex: 1,
-                pageSize: 10
-            },
+            pageIndex: 1,
+            pageSize: 10,
+
             multipleSelection: [],
             delList: [],
-            editVisible: false,
+            // editVisible: false,
             pageTotal: 0,
             form: {},
             idx: -1,
@@ -246,22 +168,22 @@ export default {
     },
     methods: {
         //吧时间戳转化为想要的时间格式
-        formateTimeStamp(time) {
-            var date = new Date();
-            date.setTime(time);
-            var year = date.getFullYear();
-            var month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
-            var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
-            var hour = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
-            var minute = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
-            var second = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
-            return year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
-        },
+        // formateTimeStamp(time) {
+        //     var date = new Date();
+        //     date.setTime(time);
+        //     var year = date.getFullYear();
+        //     var month = date.getMonth() + 1 < 10 ? '0' + (date.getMonth() + 1) : date.getMonth() + 1;
+        //     var day = date.getDate() < 10 ? '0' + date.getDate() : date.getDate();
+        //     var hour = date.getHours() < 10 ? '0' + date.getHours() : date.getHours();
+        //     var minute = date.getMinutes() < 10 ? '0' + date.getMinutes() : date.getMinutes();
+        //     var second = date.getSeconds() < 10 ? '0' + date.getSeconds() : date.getSeconds();
+        //     return year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second;
+        // },
 
         // 获取设备列表数据
         getData() {
             axios
-                .get('/getMaintenanceRecords')
+                .get('/Repair')
                 .then(res => {
                     window.console.log(res);
                     if (res.status === 200) {
@@ -280,34 +202,48 @@ export default {
             this.$router.push({
                 path: './MaintenanceDetails',
                 query: {
-                    id: row.ID
+                    id: row.id
                 }
             });
         },
 
         // 触发搜索按钮
         handleSearch() {
-            this.tableData = this.tableData.filter((item, index) => {
-                // return item.Address == '竹林北路256号';
-                for (let key in item) {
-                    // window.console.log(i, item[i]);
-                    if ((item[key] + '').includes(this.query.msg)) {
-                        return true;
+            
+             axios
+                .post('/SearchRepair',{keyword:this.keyword})
+                .then(res => {
+                    window.console.log(res);
+                    if (res.status === 200) {
+                        this.tableData = res.data;
+                        this.pageTotal = res.data.length;
+                        window.console.log(res.data);
+                    } else {
+                        window.console.log('服务器错误');
                     }
-                }
-            });
+                })
+                .catch();
+            // this.tableData = this.tableData.filter((item, index) => {
+            //     // return item.Address == '竹林北路256号';
+            //     for (let key in item) {
+            //         // window.console.log(i, item[i]);
+            //         if ((item[key] + '').includes(this.keyword)) {
+            //             return true;
+            //         }
+            //     }
+            // });
         },
 
-      // 触发重置按钮
+        // 触发重置按钮
         refresh() {
-            this.getData()
-            this.query.msg = ''
+            this.getData();
+            this.keyword = '';
         },
 
         // 删除操作
         handleDelete(index, row) {
             let idArr = [];
-            idArr.push(row.DeviceID);
+            idArr.push(row.id);
             // 二次确认删除
             this.$confirm('确定要删除吗？', '提示', {
                 type: 'warning'
@@ -315,14 +251,14 @@ export default {
                 .then(() => {
                     axios({
                         method: 'get',
-                        url: '/deleteMaintenance',
+                        url: '/DeleteRepair',
                         params: {
                             id: idArr
                         }
                     })
                         .then(res => {
                             window.console.log(res.data);
-                            this.$message.success(res.data);
+                            this.$message.success('删除成功');
                             this.getData();
                         })
                         .catch();
@@ -339,7 +275,7 @@ export default {
         delAllSelection() {
             let idArr = [];
             for (let i = 0; i < this.multipleSelection.length; i++) {
-                idArr.push(this.multipleSelection[i].DeviceID);
+                idArr.push(this.multipleSelection[i].id);
             }
             window.console.log(idArr);
             if (this.multipleSelection.length === 0) {
@@ -352,14 +288,14 @@ export default {
                 .then(() => {
                     axios({
                         method: 'get',
-                        url: '/deleteMaintenance',
+                        url: '/DeleteRepair',
                         params: {
                             id: idArr
                         }
                     })
                         .then(res => {
                             window.console.log(res.data);
-                            this.$message.success(res.data);
+                            this.$message.success('删除成功');
                             this.getData();
                         })
                         .catch({});
@@ -382,7 +318,7 @@ export default {
         },
         // 分页导航
         handlePageChange(val) {
-            this.$set(this.query, 'pageIndex', val);
+            this.pageIndex = val;
             this.getData();
         }
     }

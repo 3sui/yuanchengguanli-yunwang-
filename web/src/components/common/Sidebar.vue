@@ -12,14 +12,18 @@
         >
             <template v-for="item in items">
                 <template v-if="item.subs">
-                    <el-submenu :index="item.index" :key="item.index">
+                    <el-submenu
+                        :index="item.index"
+                        :key="item.index"
+                        v-if="!item.auth.includes(+role)"
+                    >
                         <template slot="title">
                             <i :class="item.icon"></i>
                             <span slot="title">{{ item.title }}</span>
                         </template>
                         <template v-for="subItem in item.subs">
                             <el-submenu
-                                v-if="subItem.subs"
+                                v-if="subItem.subs && subItem.auth.includes(+role)"
                                 :index="subItem.index"
                                 :key="subItem.index"
                             >
@@ -31,15 +35,21 @@
                                 >{{ threeItem.title }}</el-menu-item>
                             </el-submenu>
                             <el-menu-item
-                                v-else
+                                v-else-if="!subItem.auth.includes(+role)"
                                 :index="subItem.index"
                                 :key="subItem.index"
-                            >{{ subItem.title }}</el-menu-item>
+                            >
+                                <template>{{ subItem.title }}</template>
+                            </el-menu-item>
                         </template>
                     </el-submenu>
                 </template>
                 <template v-else>
-                    <el-menu-item :index="item.index" :key="item.index">
+                    <el-menu-item
+                        :index="item.index"
+                        :key="item.index"
+                        v-if="!item.auth.includes(role)"
+                    >
                         <i :class="item.icon"></i>
                         <span slot="title">{{ item.title }}</span>
                     </el-menu-item>
@@ -54,175 +64,159 @@ import bus from '../common/bus';
 export default {
     data() {
         return {
+            role: 1,
             collapse: false,
             items: [
                 {
                     icon: 'el-icon-lx-home',
                     index: 'dashboard',
-                    title: '主页'
+                    title: '主页',
+                    auth: []
                 },
                 {
                     icon: 'el-icon-lx-location',
                     index: 'map',
-                    title: '用户地图'
+                    title: '用户地图',
+                    auth: []
                 },
                 {
                     icon: 'el-icon-lx-calendar',
                     index: '1',
-                    title: '产品档案',
+                    title: '设备档案',
+
+                    auth: [],
                     subs: [
                         {
-                            index: 'productlist',
-                            title: '产品列表'
+                            index: 'DeviceList',
+                            title: '设备列表',
+                            auth: []
                             // subs: [
                             //     {
                             //         index: 'productlist',
-                            //         title: '产品列表'
+                            //         title: '设备列表'
                             //     },
                             //     {
                             //         index: '',
-                            //         title: '产品导入模板'
+                            //         title: '设备导入模板'
                             //     },
                             //     {
                             //         index: 'productDetails',
-                            //         title: '产品详情'
+                            //         title: '设备详情'
                             //     },
                             //     {
                             //         index: 'addnewproduct',
-                            //         title: '产品添加/编辑'
+                            //         title: '设备添加/编辑'
                             //     }
                             // ]
                         },
                         {
                             index: 'MaintenanceRecords',
-                            title: '维修记录'
+                            title: '维修记录',
+                            auth: [2, 3 ,4]
                         }
+                        // {
+                        //     index: 'EquipmentMonitoring',
+                        //     // index: 'DeviceList',
+
+                        //     title: '设备监控'
+                        // },
                     ]
                 },
                 {
-                    icon: 'el-icon-lx-calendar',
+                    icon: 'el-icon-monitor',
                     index: '2',
                     title: '远程监控',
+
+                    auth: [2, 3, 4],
                     subs: [
                         {
                             index: 'EquipmentMonitoring',
                             // index: 'DeviceList',
 
-                            title: '设备监控'
-                            // subs: [
-                            //     {
-                            //         index: 'EquipmentMonitoring',
-                            //         title: '设备监控'
-                            //     },
-                            //     {
-                            //         index: 'MeasuringPointDetails',
-                            //         title: '测点详情'
-                            //     }
-                            // ]
+                            title: '设备监控',
+                            auth: [2, 3, 4]
                         },
                         {
                             index: 'AlarmRecord',
-                            title: '报警记录'
+                            title: '报警记录',
+                            auth: [2, 3, 4]
                         }
-                    ]
-                },
-                {
-                    icon: 'el-icon-lx-calendar',
-                    index: 'ServiceBooklet',
-                    title: '服务手册',
-                    // subs: [
-                    //     {
-                    //         index: '3-1',
-                    //         title: '服务手册列表',
-                    //         subs: [
-                    //             {
-                    //                 index: 'ServiceBooklet',
-                    //                 title: '服务手册列表'
-                    //             },
-                    //             {
-                    //                 index: 'AddBooklet',
-                    //                 title: '添加'
-                    //             },
-                    //             {
-                    //                 index: 'ImportingBooklet',
-                    //                 title: '导入'
-                    //             }
-                    //         ]
-                    //     }
-                    // ]
-                },
-                {
-                    icon: 'el-icon-lx-calendar',
-                    index: '4',
-                    title: '分析中心',
-                    subs: [
-                        {
-                            index: 'EnterpriseView',
-                            title: '企业视图'
-                        },
-                        // {
-                        //     index: 'AdminView',
-                        //     title: '管理员视图'
-                        // }
                     ]
                 },
                 // {
                 //     icon: 'el-icon-lx-calendar',
-                //     index: '5',
-                //     title: '基础数据管理',
-                //     subs: [
-                //         {
-                //             index: 'DataDictionary',
-                //             title: '数据字典'
-                //             // subs: [
-                //             //     {
-                //             //         index: '',
-                //             //         title: '新增'
-                //             //     }
-                //             // ]
-                //         },
-                //         {
-                //             index: 'SupplierManagement',
-                //             title: '供应商管理'
-                //             // subs: [
-                //             //     {
-                //             //         index: '',
-                //             //         title: '新增/编辑'
-                //             //     }
-                //             // ]
-                //         },
-                //         {
-                //             index: 'AlarmSetting',
-                //             title: '报警设置/阈值设置'
-                //             // subs: [
-                //             //     {
-                //             //         index: '',
-                //             //         title: '新增/编辑'
-                //             //     }
-                //             // ]
-                //         },
-                //         {
-                //             index: 'UserInfo',
-                //             title: '用户信息'
-                //             // subs: [
-                //             //     {
-                //             //         index: '',
-                //             //         title: '新增/编辑'
-                //             //     }
-                //             // ]
-                //         },
-                //         {
-                //             index: 'RoleList',
-                //             title: '角色设置'
-                //             // subs: [
-                //             //     {
-                //             //         index: '',
-                //             //         title: '添加角色'
-                //             //     }
-                //             // ]
-                //         }
-                //     ]
-                // }
+                //     index: 'ServiceBooklet',
+                //     title: '服务手册'
+                // },
+                {
+                    icon: 'el-icon-s-data',
+                    index: '4',
+                    title: '分析中心',
+
+                    auth: [2, 3, 4],
+                    subs: [
+                        {
+                            index: 'DeviceAnalysis',
+                            title: '设备分析',
+                            auth: [2, 3, 4]
+                        },
+                        {
+                            index: 'IndustryAnalysis',
+                            title: '行业分析',
+                            auth: [2, 3, 4]
+                        },
+                        {
+                            index: 'FaultAnalysis',
+                            title: '故障分析',
+                            auth: [2, 3, 4]
+                        }
+                    ]
+                },
+                {
+                    icon: 'el-icon-setting',
+                    index: '5',
+                    title: '基础数据管理',
+                    auth: [2, 3, 4],
+
+                    subs: [
+                        {
+                            index: 'Industry',
+                            title: '行业设置',
+                            auth: [2, 3, 4]
+                            // subs: [
+                            //     {
+                            //         index: '',
+                            //         title: '新增'
+                            //     }
+                            // ]
+                        },
+                        {
+                            index: 'Enterprise',
+                            title: '企业管理',
+                            auth: [2, 3, 4]
+                        },
+                        // {
+                        //     index: 'UserInfo',
+                        //     title: '用户信息',
+                        //     auth: []
+                        // },
+                        {
+                            index: 'DeviceType',
+                            title: '设备类型',
+                            auth: [2, 3, 4]
+                        },
+                        {
+                            index: 'FaultType',
+                            title: '故障类型',
+                            auth: [2, 3, 4]
+                        },
+                        {
+                            index: 'Authority',
+                            title: '用户管理',
+                            auth: [2, 3, 4]
+                        }
+                    ]
+                }
 
                 //dome
 
@@ -324,11 +318,13 @@ export default {
         }
     },
     created() {
+        this.role = localStorage.role;
         // 通过 Event Bus 进行组件间通信，来折叠侧边栏
         bus.$on('collapse', msg => {
             this.collapse = msg;
             bus.$emit('collapse-content', msg);
         });
+        console.log(this.role);
     }
 };
 </script>

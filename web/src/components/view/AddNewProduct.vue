@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2020-05-06 14:19:13
- * @LastEditTime: 2020-05-16 12:06:57
+ * @LastEditTime: 2020-05-27 16:40:32
  * @LastEditors: Please set LastEditors
  * @Description: In User Settings Edit
  * @FilePath: \vue-manage-system\src\components\view\AddNewProduct.vue
@@ -11,9 +11,9 @@
         <div class="crumbs">
             <el-breadcrumb separator="/">
                 <el-breadcrumb-item>
-                    <i class="el-icon-lx-calendar"></i> 产品档案
+                    <i class="el-icon-lx-calendar"></i> 设备档案
                 </el-breadcrumb-item>
-                <el-breadcrumb-item>添加产品</el-breadcrumb-item>
+                <el-breadcrumb-item>添加设备</el-breadcrumb-item>
             </el-breadcrumb>
         </div>
         <div class="container">
@@ -45,18 +45,59 @@
                     <el-form-item label="客户行业" prop="CustomerIndustry">
                         <el-input v-model="form.CustomerIndustry"></el-input>
                     </el-form-item>
-                    <el-form-item label="安装地址" prop="selectedOptions">
+                    <!-- <el-form-item label="安装地址" prop="selectedOptions">
                         <el-cascader
                             size="large"
                             :options="options"
                             v-model="selectedOptions"
                             @change="handleChange"
                         ></el-cascader>
-                    </el-form-item>
+                    </el-form-item>-->
                     <el-form-item label="详细地址" prop="Address">
                         <el-input v-model="form.Address"></el-input>
                     </el-form-item>
-
+                    <el-form-item label="上传图片">
+                        <el-upload
+                            multiple
+                            class="upload-demo"
+                            ref="upload"
+                            :action="axios.defaults.baseURL + '/upload'"
+                            :on-preview="handlePreview"
+                            :on-remove="handleRemove"
+                            :file-list="form.fileListImg"
+                            list-type="picture"
+                            :limit="3"
+                            :on-exceed="handleExceed"
+                            :before-remove="beforeRemove"
+                            :before-upload="beforeAvatarUpload"
+                            :on-success="handleAvatarSuccess"
+                            accept=".png, .jpg, .jpeg"
+                        >
+                            <el-button size="small" type="primary">选取文件</el-button>
+                            <span slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过2MB，最多上传3张图片</span>
+                            <!-- <div slot="tip" class="el-upload__tip">{{axios.defaults.baseURL}}</div> -->
+                        </el-upload>
+                    </el-form-item>
+                    <el-form-item label="上传文档">
+                        <el-upload
+                            class="upload-demo"
+                            ref="upload"
+                            :action="axios.defaults.baseURL + '/upload'"
+                            :on-preview="handlePreview"
+                            :on-remove="handleRemove"
+                            :file-list="form.fileListWord"
+                            list-type="text"
+                            :limit="3"
+                            :on-exceed="handleExceed"
+                            :before-remove="beforeRemove"
+                            :before-upload="beforeAvatarUpload"
+                            :on-success="handleAvatarSuccess"
+                            accept=".pdf, .doc, .docx"
+                        >
+                            <el-button size="small" type="primary">选取文件</el-button>
+                            <span slot="tip" class="el-upload__tip">只能上传pdf/word文件，且不超过2MB，最多上传3份文档</span>
+                        </el-upload>
+                    </el-form-item>
                     <el-form-item>
                         <el-button type="primary" @click="onSubmit">提交</el-button>
                         <el-button @click="resetForm('form')">取消</el-button>
@@ -68,12 +109,12 @@
 </template>
 
 <script>
-import { provinceAndCityData, regionData, provinceAndCityDataPlus, regionDataPlus, CodeToText, TextToCode } from 'element-china-area-data';
+// import { provinceAndCityData, regionData, provinceAndCityDataPlus, regionDataPlus, CodeToText, TextToCode } from 'element-china-area-data';
 export default {
-    name: 'baseform',
+    name: 'AddNewProduct',
     data() {
         return {
-            options: regionData,
+            // options: regionData,
             form: {
                 DeviceID: '',
                 DeviceClass: '',
@@ -85,8 +126,11 @@ export default {
                 Address: '',
                 Province: '',
                 City: '',
-                District: ''
+                District: '',
+                fileListImg: [],
+                fileListWord: []
             },
+
             selectedOptions: ''
         };
     },
@@ -108,14 +152,47 @@ export default {
                 })
                 .catch(err => {});
         },
-        handleChange() {
-            this.form.Province = CodeToText[this.selectedOptions[0]];
-            this.form.City = CodeToText[this.selectedOptions[1]];
-            this.form.District = CodeToText[this.selectedOptions[2]];
-            window.console.log(this.selectedOptions);
+        //文件列表移除文件时的钩子
+        handleRemove(file, fileList) {
+            axios({
+                url: '/remove',
+                method: 'post',
+                data: {
+                    file: file
+                }
+            })
+                .then(res => {
+                    window.console.log(res.data);
+                })
+                .catch(err => {});
+            window.console.log(file, fileList);
         },
-        resetForm(formName) {
-            this.$refs[formName].resetFields();
+        //点击文件列表中已上传的文件时的钩子
+        handlePreview(file) {
+            console.log(file);
+        },
+        //文件超出个数限制时的钩子
+        handleExceed(files, fileList) {
+            this.$message.warning(
+                `当前限制选择 6 个文件，本次选择了 ${files.length} 个文件，共选择了 ${files.length + fileList.length} 个文件`
+            );
+        },
+        //删除文件之前的钩子，参数为上传的文件和文件列表，若返回 false 或者返回 Promise 且被 reject，则停止删除。
+        beforeRemove(file, fileList) {
+            return this.$confirm(`确定移除 ${file.name}？`);
+        },
+        //文件上传成功时的钩子
+        handleAvatarSuccess(response, file, fileList) {
+            window.console.log(response, file, fileList);
+            this.form.fileListImg = fileList;
+        },
+        beforeAvatarUpload(file) {
+            const isLt2M = file.size / 1024 / 1024 < 2;
+
+            if (!isLt2M) {
+                this.$message.error('上传头像图片大小不能超过 2MB!');
+            }
+            return isLt2M;
         }
     }
 };
@@ -123,5 +200,28 @@ export default {
 <style scoped>
 .form-box {
     margin: 0 auto;
+}
+.avatar-uploader .el-upload {
+    border: 1px dashed #d9d9d9;
+    border-radius: 6px;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+.avatar-uploader .el-upload:hover {
+    border-color: #409eff;
+}
+.avatar-uploader-icon {
+    font-size: 28px;
+    color: #8c939d;
+    width: 178px;
+    height: 178px;
+    line-height: 178px;
+    text-align: center;
+}
+.avatar {
+    width: 178px;
+    height: 178px;
+    display: block;
 }
 </style>

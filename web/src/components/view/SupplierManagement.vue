@@ -22,15 +22,15 @@
                     icon="el-icon-upload2"
                 >导入供应商</el-button>
                 <el-button
-                    type="primary"
+                    type="danger"
                     class="handle-del mr10"
-                    @click="importParts"
-                    icon="el-icon-upload2"
-                >导入零部件</el-button>
+                    @click="DeleteSupplier"
+                    icon="el-icon-delete"
+                >删除</el-button>
             </div>
             <div class="handle-box">
-                <el-row>
-                    <el-col :span="3">
+                <el-row :gutter="20">
+                    <!-- <el-col :span="3">
                         <el-select v-model="value" placeholder="请选择省">
                             <el-option
                                 v-for="item in options"
@@ -59,22 +59,11 @@
                                 :value="item.value"
                             ></el-option>
                         </el-select>
-                    </el-col>
-                    <el-col :span="3">
+                    </el-col>-->
+                    <el-col :span="6">
                         <el-input v-model="query.name" placeholder="名称"></el-input>
                     </el-col>
-                    <el-col :span="2">
-                        <div class="demonstration">创建日期</div>
-                    </el-col>
-                    <el-col :span="8">
-                        <el-date-picker
-                            v-model="value1"
-                            type="daterange"
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                        ></el-date-picker>
-                    </el-col>
+
                     <el-col :span="2">
                         <el-button type="primary" icon="el-icon-search" @click="handleSearch">搜索</el-button>
                     </el-col>
@@ -93,7 +82,7 @@
                 <!-- 复选框 -->
                 <el-table-column type="selection" width="55" align="center"></el-table-column>
                 <!-- 序号 -->
-                <el-table-column prop="id" label="序号" width="55" align="center"></el-table-column>
+                <el-table-column type="index" label="序号" width="55" align="center"></el-table-column>
                 <!-- 供应商编号 -->
                 <el-table-column prop="supplierID" label="供应商编号" align="center"></el-table-column>
                 <!-- 供应商名称 -->
@@ -107,11 +96,7 @@
                 <!-- 所属行业大类 -->
                 <el-table-column prop="industry" label="所属行业大类" align="center"></el-table-column>
                 <!-- 省 -->
-                <el-table-column prop="province" label="省" align="center"></el-table-column>
-                <!-- 市 -->
-                <el-table-column prop="city" label="市" align="center"></el-table-column>
-                <!-- 区县 -->
-                <el-table-column prop="district" label="区县" align="center"></el-table-column>
+                <el-table-column prop="address" label="地址" align="center"></el-table-column>          
                 <!-- 创建日期 -->
                 <el-table-column prop="createtime" label="创建日期" align="center"></el-table-column>
                 <!-- 操作 -->
@@ -152,44 +137,32 @@
         <!-- 编辑弹出框 -->
         <el-dialog title="新增/编辑" :visible.sync="editVisible" width="30%">
             <el-form ref="form" :model="form" label-width="150px">
+                  <el-form-item label="*供应商编号">
+                    <el-input v-model="form.supplierID"></el-input>
+                </el-form-item>
                 <el-form-item label="*供应商名称">
-                    <el-input v-model="form.address"></el-input>
+                    <el-input v-model="form.supplierName"></el-input>
                 </el-form-item>
                 <el-form-item label="*所属行业大类">
-                    <el-input v-model="form.address"></el-input>
+                    <el-input v-model="form.industry"></el-input>
                 </el-form-item>
                 <el-form-item label="*主要联系人姓名">
-                    <el-input v-model="form.address"></el-input>
+                    <el-input v-model="form.contactName"></el-input>
                 </el-form-item>
                 <el-form-item label="*手机号">
-                    <el-input v-model="form.address"></el-input>
+                    <el-input v-model="form.phone"></el-input>
                 </el-form-item>
                 <el-form-item label="*邮箱">
-                    <el-input v-model="form.address"></el-input>
+                    <el-input v-model="form.email"></el-input>
                 </el-form-item>
                 <el-form-item label="所在地址">
                     <el-input v-model="form.address"></el-input>
                 </el-form-item>
-                <el-form-item label="*具体地址">
-                    <el-input v-model="form.address"></el-input>
-                </el-form-item>
             </el-form>
-            <el-divider content-position="left">添加零部件</el-divider>
-            <el-form ref="form" :model="form" label-width="150px">
-                <el-form-item label="*零部件名称">
-                    <el-input v-model="form.address"></el-input>
-                </el-form-item>
-                <el-form-item label="数量">
-                    <el-input v-model="form.address"></el-input>
-                </el-form-item>
-                <el-form-item label="继续添加">
-                    <i data-v-41aaf3b9 class="el-icon-lx-add"></i>
-                </el-form-item>
-            </el-form>
-            <el-divider></el-divider>
+
             <span slot="footer" class="dialog-footer">
-                <el-button @click="editVisible = false">取 消</el-button>
-                <el-button type="primary" @click="saveEdit">确 定</el-button>
+                <el-button @click="Cancel">取 消</el-button>
+                <el-button type="primary" @click="Confirm">确 定</el-button>
             </span>
         </el-dialog>
     </div>
@@ -201,21 +174,21 @@ export default {
     name: 'SupplierManagement',
     data() {
         return {
+            options: {},
+            id: [],
             query: {
-                id: 0,
-                supplierID: '001',
-                supplierName: '航天云网',
-                contactName: '张三',
-                phone: '1562839294',
-                email: 'sssss@qq.com',
-                industry: '制造业',
-                province: '江苏省',
-                city: '常州市',
-                district: '新北区',
-                createtime: '2020-05-09 09:25:26',
-                pageIndex: 1,
-                pageSize: 10
+                ID: 0,
+                supplierID: '',
+                supplierName: '',
+                contactName: '',
+                phone: '',
+                email: '',
+                industry: '',
+                address: '',
+                createtime: '',            
             },
+            pageIndex: 1,
+            pageSize: 10,
             tableData: [],
             multipleSelection: [],
             delList: [],
@@ -223,26 +196,33 @@ export default {
             pageTotal: 0,
             form: {},
             idx: -1,
-            id: -1
+            id: -1,
+            is_add: true
         };
     },
     created() {
         this.getData();
     },
     methods: {
-        // 获取 easy-mock 的模拟数据
         getData() {
-            fetchData(this.query).then(res => {
-                console.log(res);
-                this.tableData = res.supplier;
-                this.pageTotal = res.pageTotal || 50;
-            });
+            this.$axios
+                .get('/getSuppliers')
+                .then(res => {
+                    console.log(res);
+                    this.tableData = res.data;
+                })
+                .catch(err => {
+                    console.log(err);
+                });
         },
         // 触发搜索按钮
         handleSearch() {
             this.$set(this.query, 'pageIndex', 1);
             this.getData();
         },
+        //导入供应商
+        ImportSuppliers() {},
+
         // 删除操作
         handleDelete(index, row) {
             // 二次确认删除
@@ -269,20 +249,62 @@ export default {
             this.$message.error(`删除了${str}`);
             this.multipleSelection = [];
         },
+        //
+        DeleteSupplier(){},
         // 编辑操作
         handleEdit(index, row) {
             this.idx = index;
             this.form = row;
             this.editVisible = true;
+            this.is_add=false;
         },
-        // 保存编辑
-        saveEdit() {
-            this.editVisible = false;
-            this.$message.success(`修改第 ${this.idx + 1} 行成功`);
-            this.$set(this.tableData, this.idx, this.form);
+        // // 保存编辑
+        // saveEdit() {
+        //     this.editVisible = false;
+        //     this.$message.success(`修改第 ${this.idx + 1} 行成功`);
+        //     this.$set(this.tableData, this.idx, this.form);
+        // },
+        //新增
+        AddSupplier() {
+            this.editVisible = true;
+            this.is_add = true;
         },
-        AddSupplier(){
- this.editVisible = true;
+        //取消
+        Cancel(){
+            this.form={},
+            this.editVisible=false
+        },
+        //确认
+        Confirm() {
+            if (this.form.supplierName == '' || this.form.supplierName == null) {
+                this.$message.error('供应商名称不能为空');
+            } else {
+                
+                if (this.is_add == true) {
+                    this.$axios
+                        .post('/AddNewSupplier', this.form)
+                        .then(res => {
+                            if (res) {
+                                this.$message.success(res.data);
+                            }
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
+                }else{
+                      this.$axios
+                        .post('/updateSupplier', this.form)
+                        .then(res => {
+                            if (res) {
+                                this.$message.success(res.data);
+                            }
+                        })
+                        .catch(err => {
+                            console.log(err);
+                        });
+                }
+            }
+            this.editVisible=false
         },
         // 分页导航
         handlePageChange(val) {

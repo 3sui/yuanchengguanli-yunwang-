@@ -15,50 +15,81 @@ export default new Router({
                 title: '自述文件'
             },
             children: [{
-                    path: '/dashboard',
-                    component: () => import( /* webpackChunkName: "dashboard" */ '../components/page/Dashboard.vue'),
+                    path: '/ChangePassword',
+                    component: () => import( /* webpackChunkName: "dashboard" */ '../components/common/ChangePassword.vue'),
                     meta: {
-                        title: '系统首页'
+                        title: '修改密码',
+                        auth: []
+                    }
+                }, {
+                    path: '/dashboard',
+                    component: () => import( /* webpackChunkName: "dashboard" */ '../components/home/Dashboard.vue'),
+                    meta: {
+                        title: '系统首页',
+                        auth: []
                     }
                 },
                 {
                     path: '/map',
-                    component: () => import( /* webpackChunkName: "map" */ '../components/view/map.vue'),
+                    component: () => import( /* webpackChunkName: "map" */ '../components/Map/map.vue'),
                     meta: {
-                        title: '设备地图'
+                        title: '设备地图',
+                        auth: []
                     }
                 },
                 {
-                    path: '/productList',
-                    component: () => import( /* webpackChunkName: "ProductList" */ '../components/view/ProductList.vue'),
+                    path: '/DeviceList',
+                    component: () => import( /* webpackChunkName: "DeviceList" */ '../components/deviceRecord/DeviceList.vue'),
                     meta: {
-                        title: '设备列表'
+                        title: '设备列表',
+                        auth: []
+
                     }
                 },
                 {
                     path: '/productDetails',
-                    component: () => import( /* webpackChunkName: "ProductDetails" */ '../components/view/ProductDetails.vue'),
+                    component: () => import( /* webpackChunkName: "ProductDetails" */ '../components/deviceRecord/ProductDetails.vue'),
                     meta: {
-                        title: '设备详情'
+                        title: '设备详情',
+                        auth: []
+
+                    }
+                },
+                {
+                    path: '/DevicePointSet',
+                    component: () => import( /* webpackChunkName: "ProductDetails" */ '../components/deviceRecord/DevicePointSet.vue'),
+                    meta: {
+                        title: '测点设置',
+                        auth: [3]
+
                     }
                 },
                 {
                     path: '/addnewproduct',
-                    component: () => import( /* webpackChunkName: "ProductDetails" */ '../components/view/AddNewProduct.vue'),
+                    component: () => import( /* webpackChunkName: "ProductDetails" */ '../components/deviceRecord/AddNewProduct.vue'),
                     meta: {
-                        title: '添加设备'
+                        title: '添加设备',
+                        auth: [3]
+                    }
+                },
+                {
+                    path: '/deviceSettings',
+                    component: () => import( /* webpackChunkName: "ProductDetails" */ '../components/deviceRecord/DeviceSettings.vue'),
+                    meta: {
+                        title: '测点配置',
+                        auth: [3]
                     }
                 },
                 {
                     path: '/maintenancerecords',
-                    component: () => import( /* webpackChunkName: "MaintenanceRecords" */ '../components/view/MaintenanceRecords.vue'),
+                    component: () => import( /* webpackChunkName: "MaintenanceRecords" */ '../components/deviceRecord/MaintenanceRecords.vue'),
                     meta: {
                         title: '维修记录'
                     }
                 },
                 {
                     path: '/maintenancedetails',
-                    component: () => import( /* webpackChunkName: "MaintenanceDetails" */ '../components/view/MaintenanceDetails.vue'),
+                    component: () => import( /* webpackChunkName: "MaintenanceDetails" */ '../components/deviceRecord/MaintenanceDetails.vue'),
                     meta: {
                         title: '维修详情'
                     }
@@ -72,28 +103,21 @@ export default new Router({
                 },
                 {
                     path: '/EquipmentMonitoring',
-                    component: () => import( /* webpackChunkName: "EquipmentMonitoring" */ '../components/view/EquipmentMonitoring.vue'),
-                    meta: {
-                        title: '设备监控'
-                    }
-                },
-                {
-                    path: '/DeviceList',
-                    component: () => import( /* webpackChunkName: "DeviceList" */ '../components/view2/DeviceList.vue'),
+                    component: () => import( /* webpackChunkName: "EquipmentMonitoring" */ '../components/maintain/EquipmentMonitoring.vue'),
                     meta: {
                         title: '设备监控'
                     }
                 },
                 {
                     path: '/MeasuringPointDetails',
-                    component: () => import( /* webpackChunkName: "MeasuringPointDetails" */ '../components/view/MeasuringPointDetails.vue'),
+                    component: () => import( /* webpackChunkName: "MeasuringPointDetails" */ '../components/maintain/MeasuringPointDetails.vue'),
                     meta: {
                         title: '测点详情'
                     }
                 },
                 {
                     path: '/AlarmRecord',
-                    component: () => import( /* webpackChunkName: "AlarmRecord" */ '../components/view/AlarmRecord.vue'),
+                    component: () => import( /* webpackChunkName: "AlarmRecord" */ '../components/maintain/AlarmRecord.vue'),
                     meta: {
                         title: '报警记录'
                     }
@@ -138,55 +162,88 @@ export default new Router({
 
 
                 //基础数据管理
-
-                //数据字典
+                //行业设置
                 {
-                    path: '/DataDictionary',
-                    component: () => import( /* webpackChunkName: "DataDictionary" */ '../components/view/DataDictionary.vue'),
+                    path: '/Industry',
+                    component: () => import( /* webpackChunkName: "Industry" */ '../components/DataSettings/Industry.vue'),
                     meta: {
-                        title: '数据字典'
+                        title: '行业设置'
                     }
 
                 },
-                //供应商管理
+
+                //企业管理
                 {
-                    path: '/SupplierManagement',
-                    component: () => import( /* webpackChunkName: "SupplierManagement" */ '../components/view/SupplierManagement.vue'),
+                    path: '/Enterprise',
+                    component: () => import( /* webpackChunkName: "Enterprise" */ '../components/DataSettings/Enterprise.vue'),
                     meta: {
-                        title: '供应商管理'
+                        title: '企业管理'
                     }
                 },
-                //报警设置、阈值设置
-                {
-                    path: '/AlarmSetting',
-                    component: () => import( /* webpackChunkName: "AlarmSetting" */ '../components/view/AlarmSetting.vue'),
-                    meta: {
-                        title: '报警设置/阈值设置'
-                    }
-                },
+
                 //用户信息
                 {
                     path: '/UserInfo',
-                    component: () => import( /* webpackChunkName: "UserInfo" */ '../components/view/UserInfo.vue'),
+                    component: () => import( /* webpackChunkName: "UserInfo" */ '../components/DataSettings/UserInfo.vue'),
                     meta: {
                         title: '用户信息'
                     }
                 },
-
-                //角色设置
                 {
-                    path: '/RoleList',
-                    component: () => import( /* webpackChunkName: "RoleList" */ '../components/view/RoleList.vue'),
+                    path: '/DeviceType',
+                    component: () => import( /* webpackChunkName: "DeviceType" */ '../components/DataSettings/DeviceType.vue'),
                     meta: {
-                        title: '角色设置'
+                        title: '设备类型'
                     }
                 },
-                //分析中心
                 {
-                    path: '/AnalysisCenter',
-                    component: () => import( /* webpackChunkName: "AnalysisCenter" */ '../components/view/AnalysisCenter.vue'),
+                    path: '/FaultType',
+                    component: () => import( /* webpackChunkName: "FaultType" */ '../components/DataSettings/FaultType.vue'),
                     meta: {
-                        title: '分析中心'
+                        title: '故障种类'
+                    }
+                },
+                {
+                    path: '/Authority',
+                    component: () => import( /* webpackChunkName: "Authority" */ '../components/DataSettings/Authority.vue'),
+                    meta: {
+                        title: '用户管理'
+                    }
+                },
+
+                //角色设置
+                // {
+                //     path: '/RoleList',
+                //     component: () => import( /* webpackChunkName: "RoleList" */ '../components/view/RoleList.vue'),
+                //     meta: {
+                //         title: '角色设置'
+                //     }
+                // },
+
+
+                //分析中心
+                //设备分析
+                {
+                    path: '/DeviceAnalysis',
+                    component: () => import( /* webpackChunkName: "DeviceAnalysis" */ '../components/Analysis/DeviceAnalysis.vue'),
+                    meta: {
+                        title: '设备分析'
+                    }
+                },
+                //行业分析
+                {
+                    path: '/IndustryAnalysis',
+                    component: () => import( /* webpackChunkName: "IndustryAnalysis" */ '../components/Analysis/IndustryAnalysis.vue'),
+                    meta: {
+                        title: '行业分析'
+                    }
+                },
+                //设备分析
+                {
+                    path: '/FaultAnalysis',
+                    component: () => import( /* webpackChunkName: "FaultAnalysis" */ '../components/Analysis/FaultAnalysis.vue'),
+                    meta: {
+                        title: '故障分析'
                     }
                 },
 
@@ -297,19 +354,12 @@ export default new Router({
                     meta: {
                         title: '403'
                     }
-                },
-                {
-                    path: '/donate',
-                    component: () => import( /* webpackChunkName: "donate" */ '../components/page/Donate.vue'),
-                    meta: {
-                        title: '支持作者'
-                    }
                 }
             ]
         },
         {
             path: '/login',
-            component: () => import( /* webpackChunkName: "login" */ '../components/page/Login.vue'),
+            component: () => import( /* webpackChunkName: "login" */ '../components/login/Login.vue'),
             meta: {
                 title: '登录'
             }
