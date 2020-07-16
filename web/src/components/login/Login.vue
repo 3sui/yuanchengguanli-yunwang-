@@ -21,7 +21,14 @@
                 <div class="login-btn">
                     <el-button type="primary" @click="submitForm('login')">登录</el-button>
                 </div>
-                <!-- <p class="login-tips">Tips : 用户名和密码随便填。</p> -->
+                <el-row :gutter="20">
+                    <el-col :span="8">
+                        <span class="login-tips" @click="register">新用户注册</span>
+                    </el-col>
+                    <el-col :span="6" :offset="10">
+                        <span class="login-tips" @click="findpassword">找回密码</span>
+                    </el-col>
+                </el-row>
             </el-form>
         </div>
     </div>
@@ -32,7 +39,7 @@ export default {
     data: function() {
         return {
             param: {
-                username: 'admin',
+                username: '',
                 password: ''
             },
             rules: {
@@ -51,14 +58,18 @@ export default {
                         data: this.param
                     })
                         .then(res => {
+                            console.log(res.data);
                             if (res.data.success) {
                                 this.$message.success('登录成功');
-                                localStorage.ms_username = res.data.ms_username;
+                                
+                                localStorage.username = res.data.username
+                                localStorage.nickname = res.data.nickname
+                                localStorage.role = res.data.role
+                                localStorage.phone = res.data.phone
+                                localStorage.email = res.data.email
+                                localStorage.created_time = res.data.created_time
                                 localStorage.token = res.data.token;
-                                localStorage.role = res.data.role;
-                                localStorage.avatar = res.data.avatar;
-                                localStorage.username=res.data.username;
-
+                            
                                 this.$router.push('/');
                                 console.log(res.data);
                             }
@@ -71,7 +82,11 @@ export default {
                     return false;
                 }
             });
-        }
+        },
+        register() {
+            this.$router.push('/register');
+        },
+        findpassword() {}
     }
 };
 </script>
@@ -81,8 +96,9 @@ export default {
     position: relative;
     width: 100%;
     height: 100%;
-    background-image: url(../../assets/img/login-bg.jpg);
-    background-size: 100%;
+    background-image: url(../../assets/img/beijing1.png);
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
 }
 .ms-title {
     width: 100%;
@@ -115,7 +131,12 @@ export default {
 }
 .login-tips {
     font-size: 12px;
-    line-height: 30px;
+    line-height: 20px;
+    height: 20px;
     color: #fff;
+}
+.login-tips:hover {
+    color: orange;
+    cursor: pointer;
 }
 </style>

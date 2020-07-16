@@ -5,7 +5,7 @@
             <i v-if="!collapse" class="el-icon-s-fold"></i>
             <i v-else class="el-icon-s-unfold"></i>
         </div>
-        <div class="logo">设备远程诊断系统</div>
+        <div class="logo">设备远程管理系统</div>
         <div class="header-right">
             <div class="header-user-con">
                 <!-- 全屏显示 -->
@@ -42,6 +42,7 @@
                             <el-dropdown-item>项目仓库</el-dropdown-item>
                         </a>-->
                         <el-dropdown-item divided command="changePassword">修改密码</el-dropdown-item>
+                        <el-dropdown-item divided command="applyEnterprise">加入企业</el-dropdown-item>
                         <el-dropdown-item divided command="loginout">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
@@ -57,13 +58,13 @@ export default {
         return {
             collapse: false,
             fullscreen: false,
-            name: 'linxin',
+            name: '游客',
             message: 2
         };
     },
     computed: {
         username() {
-            let username = localStorage.getItem('ms_username');
+            let username = localStorage.getItem('nickname');
             return username ? username : this.name;
         },
         userAvatar() {
@@ -85,6 +86,10 @@ export default {
             if (command == 'changePassword') {
                 console.log('changePassword');
                 this.$router.push('/changePassword');
+            }
+            if (command == 'applyEnterprise') {
+                console.log('applyEnterprise');
+                this.$router.push('/applyEnterprise');
             }
         },
         // 侧边栏折叠

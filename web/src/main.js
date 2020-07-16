@@ -54,12 +54,12 @@ Vue.prototype.$echarts = echarts;
 //使用钩子函数对路由进行权限跳转
 router.beforeEach((to, from, next) => {
     document.title = `${to.meta.title} | 设备远程管理系统`;
-    const role = localStorage.getItem('ms_username');
-    if (!role && to.path !== '/login') {
+    const role = localStorage.getItem('role');
+    if (!role && to.path !== '/login' && to.path !== '/register' ) {
         next('/login');
-    } else if (to.meta.permission) {
+    // } else if (to.meta.permission) {
         // 如果是管理员权限则可进入，这里只是简单的模拟管理员权限而已
-        role === 'admin' ? next() : next('/403');
+        // role === 'admin' ? next() : next('/403');
     } else {
         // 简单的判断IE10及以下不进入富文本编辑器，该组件不兼容
         if (navigator.userAgent.indexOf('MSIE') > -1 && to.path === '/editor') {
