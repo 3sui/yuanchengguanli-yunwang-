@@ -20,6 +20,7 @@ module.exports = option => {
         const {
             id
         } = jwt.verify(token, req.app.get('secret'))
+        console.log(id);
         //id不存在
         assert(id, 401, '请登录')
         let sql = "select * from user_info where id = ?"
@@ -30,8 +31,8 @@ module.exports = option => {
 
         //用户不存在
         assert(req.user, 401, '请登录')
-        let result2 = await connection(`select * from user_role where user_id = ${req.user.id}`)
-        req.user.role = result2[0].role_id
+        // let result2 = await connection(`select * from user_role where user_id = ${req.user.id}`)
+        // req.user.role = result2[0].role_id
         // console.log(result2);
 
         next()

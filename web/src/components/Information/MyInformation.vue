@@ -15,10 +15,14 @@
                     <div class="avatar-container">
                         <el-upload
                             class="avatar-uploader"
-                            action="https://jsonplaceholder.typicode.com/posts/"
+                            :data="{id:addNewUserId}"
+                            :action="axios.defaults.baseURL + '/dataSettings/addNewUserAvatar'"
+                            :headers="getAuthHeaders()"
                             :show-file-list="false"
                             :on-success="handleAvatarSuccess"
                             :before-upload="beforeAvatarUpload"
+                            :on-change="clickAvatarUpload"
+                            accept=".jpg, .png, .jpeg"
                         >
                             <img v-if="imageUrl" :src="imageUrl" class="avatar" />
                             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
@@ -106,14 +110,17 @@ export default {
 
     methods: {
         getData() {
-            this.form.username = localStorage.username !== 'null' ? localStorage.username : '';
-            this.form.nickname = localStorage.nickname !== 'null' ? localStorage.nickname : '';
-            this.form.phone = localStorage.phone !== 'null' ? localStorage.phone : '';
-            this.form.email = localStorage.email !== 'null' ? localStorage.email : '';
-            this.form.created_time = localStorage.created_time !== 'null' ? localStorage.created_time : '';
-            //    this.form.phone=localStorage.ms_username
-            //    this.form.phone=localStorage.ms_username
-            //    this.form.phone=localStorage.ms_username
+            axios({
+                methods: 'get',
+                url: '/login/checkUser',
+                params: {
+                    username: localStorage.username
+                }
+            }).then(res => {
+                if (res.data !== [] || res.data.length !== 0) {
+                    this.form = JSON.parse(JSON.stringify(res.data[0]));
+                }
+            });
         },
         Edit(key, label, value) {
             this.dialogVisible = true;
@@ -124,20 +131,23 @@ export default {
         handleClose(done) {
             this.dialogVisible = false;
         },
-        Confirm(dialogkey,dialogvalue){
-            let data={
-                name:dialogkey,
-                value:dialogvalue,
-                username:this.form.username
-            }
-            axios({
-                methods:'post',
-                url:'/login/ModifyUser',
-                data:data
-            })
-            .then(res=>{
-                console.log(res.data);
-            })
+        Confirm(dialogkey, dialogvalue) {
+            let data = {
+                name: dialogkey,
+                value: dialogvalue,
+                username: this.form.username
+            };
+            this.$axios.post('/login/ModifyUser', data).then(res => {
+                if (res.data) {
+                    this.$message.success('修改成功');
+                    this.dialogVisible = false;
+                    this.getData();
+                } else {
+                    this.$message.error('修改失败');
+                    this.dialogVisible = false;
+                }
+                // console.log(res);
+            });
         },
 
         handleAvatarSuccess(res, file) {
