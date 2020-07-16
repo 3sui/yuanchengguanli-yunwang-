@@ -20,7 +20,7 @@ module.exports = app => {
             username
         } = req.body
         console.log(password)
-        let sql = "select password,id,nickname,avatar,phone,username from user_info where username = ? and is_deleted = 0"
+        let sql = "select * from user_info where username = ? and is_deleted = 0"
         let row = await connection(sql, username)
         assert(row.length, 422, '用户不存在')
         assert(row[0].password === password, 422, '密码不正确')
@@ -28,13 +28,18 @@ module.exports = app => {
         result.token = jwt.sign({
             id: row[0].id
         }, app.get('secret'))
-        result.ms_username = row[0].nickname
         result.username = row[0].username
-        result.success = true
-        result.avatar = row[0].avatar
+        result.nickname = row[0].nickname
         result.phone = row[0].phone
-        let result2 = await connection(`select * from user_role where user_id = ${row[0].id}`)
-        result.role = result2[0].role_id
+        result.email = row[0].email
+        result.created_time = row[0].created_time
+        result.role = row[0].role
+        result.enterprise_id = row[0].enterprise_id
+    
+       
+        result.success = true
+        console.log(result);
+      
         res.send(result)
     })
 
@@ -68,6 +73,47 @@ module.exports = app => {
         res.send(results)
     })
 
+//注册用户
+    router.post('/addUser',  async (req, res) => {
+        console.log(req.data);
+        let data = {}
+        data.username = req.body.username
+        data.password = req.body.password
+        data.nickname = req.body.nickname
+        let sql = `insert into user_info set ? `
+        let results = await connection(sql, data)
+        console.log(results);
+        res.send(results)
+    })
+
+    //验证用户名是否已存在
+
+    router.get('/checkUser', async (req, res) => {
+        console.log(req.query);
+    
+        let username = req.query.username
+        console.log(username);
+       
+        let sql = `select * from user_info where username='${username}' and is_deleted='0' `
+        console.log(sql);
+        let results = await connection(sql)
+        console.log(results);
+        res.send(results)
+    })
+
+    //修改用户信息：名称、电话、邮箱
+    router.post('/ModifyUser', authMiddle,async (req, res) => {
+ 
+        let name = req.body.name
+        let value = req.body.value
+        let username=req.body.username
+     
+        let sql = `update user_info set ${name}='${value}' where username='${username}' `
+        console.log(sql);
+        let results = await connection(sql)
+        console.log(results);
+        res.send(results)
+    })
 
 
     app.use('/api/login', router)

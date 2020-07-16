@@ -14,7 +14,7 @@ module.exports = app => {
         port: '3309',
         user: 'root',
         password: 'fL2!76KuRr4$md#87zf2hkWnPrDD359p',
-        database: 'hlyy',
+        database: 'devicemanage_cloud',
         dateStrings: true
     }
     let connection = mysql.createPool(options)
@@ -41,15 +41,15 @@ module.exports = app => {
         })
     }
 
+ //查询MySQL中数据库
+    // var cnt = 0;
+    // var conn = function () {
+    //     query('SELECT * FROM device');
+    //     cnt++;
+    //     console.log("Mysql重连接成功! 次数:" + cnt);
+    // }
 
-    var cnt = 0;
-    var conn = function () {
-        query('SELECT * FROM device'); //查询MySQL中数据库
-        cnt++;
-        console.log("Mysql重连接成功! 次数:" + cnt);
-    }
-
-    setInterval(conn, 50 * 10000); //循环执行
-
+    // setInterval(conn, 50 * 10000); 
+//循环执行
     return query
 }
