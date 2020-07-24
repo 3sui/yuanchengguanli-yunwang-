@@ -13,7 +13,6 @@ module.exports = app => {
     const router = express.Router()
     const fs = require("fs"); // 读写文件的模块
     const path = require("path") // 处理路径的模块
-
     //根据企业id已经上传数据的设备数量
     router.get('/fetchDeviceNum', async (res, req) => {
         axios({
@@ -37,7 +36,6 @@ module.exports = app => {
         let results = {}
         for (let i in status) {
             console.log(i);
-
             await axios({
                     method: 'post',
                     url: '/getEnterpriseRealTimeDataByOrgIdAndKey.ht',
@@ -50,7 +48,6 @@ module.exports = app => {
                 })
                 .then(res => {
                     console.log(res.data);
-
                     results[status[i]] = res.data.data[0].v
                     // console.log(results)
 

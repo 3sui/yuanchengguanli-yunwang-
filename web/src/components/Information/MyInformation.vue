@@ -27,6 +27,7 @@
                             <img v-if="imageUrl" :src="imageUrl" class="avatar" />
                             <i v-else class="el-icon-plus avatar-uploader-icon"></i>
                         </el-upload>
+                        <el-button type="primary" @click="upload">上传</el-button>
                     </div>
                 </el-col>
                 <el-col :span="20">
@@ -140,6 +141,7 @@ export default {
             this.$axios.post('/login/ModifyUser', data).then(res => {
                 if (res.data) {
                     this.$message.success('修改成功');
+                    localStorage[dialogkey]=dialogvalue;
                     this.dialogVisible = false;
                     this.getData();
                 } else {
